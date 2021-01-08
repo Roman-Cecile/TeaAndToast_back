@@ -68,7 +68,10 @@ const genericController = {
 
 			// on a la bonne classe => on va chercher l'instance
 			const targetId = req.params.id;
-			const result = await targetClass.findByPk(targetId, {
+			const result = await targetClass.findOne({
+				where: {
+					[req.params.type]: req.params.name, // userId or objectName
+				},
 				include: [{ all: true, nested: true }],
 			});
 
