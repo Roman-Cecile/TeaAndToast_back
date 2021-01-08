@@ -5,7 +5,7 @@ const genericController = require("./controllers/genericController");
 
 // router.get("/admin/:entity/number/:number", genericController.getAll);
 router.get("/:entity", genericController.getAll);
-router.get("/:entity/:id", genericController.getOne);
+router.get("/:entity/:name/:type", genericController.getOne);
 router.post("/:entity", genericController.create);
 router.patch("/:entity/:id", genericController.update);
 router.delete("/:entity/:id", genericController.delete);
