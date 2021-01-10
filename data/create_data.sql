@@ -69,5 +69,13 @@ CREATE TABLE IF NOT EXISTS "basket" (
     "updatedAt" TIMESTAMP NULL
 );
 
+CREATE TABLE IF NOT EXISTS "session" (
+  "sid" TEXT PRIMARY KEY,
+  "expires" DATE,
+  "data" TEXT,
+  "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NULL
+);
+
 
 COMMIT;

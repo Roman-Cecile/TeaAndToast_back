@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const genericController = require("./controllers/genericController");
+const loginController = require("./controllers/loginController");
+
+// Login
+// loginType = "signin" || "signup"
+router.post("/login/:loginType", loginController.login);
 
 // router.get("/admin/:entity/number/:number", genericController.getAll);
 router.get("/:entity", genericController.getAll);
