@@ -10,6 +10,7 @@ const Sale = require("./sale");
 const Tea = require("./tea");
 const User = require("./user");
 const Variety = require("./variety");
+const Session = require("./session");
 
 // Category <-> Tea
 Category.hasMany(Tea, {
@@ -55,4 +56,5 @@ module.exports = {
 	User,
 	Variety,
 	Tea,
+	Session,
 };

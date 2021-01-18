@@ -7,16 +7,4 @@ const client = new Sequelize(process.env.DATABASE_URL, {
 	protocol: "postgres",
 });
 
-// async function testConnection  () {
-// 	try {
-// 	await sequelize.authenticate();
-// 	console.info("Connection has been established successfully.");
-// 	console.info("Connection has been established successfully.");
-// } catch (error) {
-// 	console.error("Unable to connect to the database:", error);
-// 	console.log("Unable to connect to the database:", error);
-// 	console.info("Unable to connect to the database:", error);
-// }
-// }
-
 module.exports = client;

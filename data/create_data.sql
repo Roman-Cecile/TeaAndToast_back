@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "app_user" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "BasketId" INT,
+    "logged", BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP NULL
 );
@@ -73,6 +74,7 @@ CREATE TABLE IF NOT EXISTS "session" (
   "sid" TEXT PRIMARY KEY,
   "expires" DATE,
   "data" TEXT,
+  "userId" INT DEFAULT null,
   "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP NULL
 );
