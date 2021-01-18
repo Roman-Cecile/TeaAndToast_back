@@ -1,5 +1,5 @@
 // on require les models
-const { Basket, User } = require("../models");
+const { Basket, User, Session } = require("../models");
 const bcrypt = require("bcrypt");
 
 // petite fonction bien pratique, pour passer la première lettre d'une string en majuscule
@@ -8,6 +8,7 @@ function uppercaseFirstLetter(str) {
 }
 
 const loginController = {
+	// Signin and Signup
 	login: async (req, res, next) => {
 		try {
 			const { loginType } = req.params;
@@ -70,9 +71,40 @@ const loginController = {
 				});
 				// on renvoie l'instance nouvellement créée
 				res.status(200).send({
-					message: "Inscription réussie",
+					message: "Inscription réussie ! Vous pouvez vous connecter",
 				});
 			}
+		} catch (error) {
+			console.trace(error);
+			res.status(500).send(error);
+		}
+	},
+
+	// Check if session exist
+	checkLogin: async (req, res, next) => {
+		try {
+			if (req.session.user) {
+				return res.status(200).send({
+					user: req.session.user,
+				});
+			}
+
+			// equivalent to res.status(404).send('Not Found')
+			res.sendStatus(404);
+		} catch (error) {
+			console.trace(error);
+			res.status(500).send(error);
+		}
+	},
+
+	logOut: async (req, res, next) => {
+		try {
+			if (req.session.user) {
+				delete req.session.user;
+				return res.sendStatus(200);
+			}
+
+			res.sendStatus(404);
 		} catch (error) {
 			console.trace(error);
 			res.status(500).send(error);

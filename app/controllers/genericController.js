@@ -94,7 +94,6 @@ const genericController = {
 
 	create: async (req, res, next) => {
 		try {
-			console.log(req.body);
 			const { emailOrName } = req.body;
 			// d'abord récupérer la classe ciblée
 			const trueModelName = uppercaseFirstLetter(req.params.entity);
@@ -151,7 +150,6 @@ const genericController = {
 	// une méthode PATCH pour modifier une instance (ou 404 si non trouvée)
 	update: async (req, res, next) => {
 		try {
-			console.log("UPDATE BODY :: ", req.body);
 			const { emailOrName } = req.body;
 			// d'abord récupérer la classe ciblée
 			const trueModelName = uppercaseFirstLetter(req.params.entity);
@@ -221,6 +219,11 @@ const genericController = {
 	// une methode DELETE pour supprimer une instance (ou 404 si non trouvée)
 	delete: async (req, res, next) => {
 		try {
+			// delete session
+			if (req.params.entity === "user") {
+				delete req.session.user;
+				return res.sendStatus(200);
+			}
 			// d'abord récupérer la classe ciblée
 			const trueModelName = uppercaseFirstLetter(req.params.entity);
 			const targetClass = models[trueModelName];

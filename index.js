@@ -31,12 +31,21 @@ const bodyParser = multer();
 // on utlise .none() pour dire à multer qu'on attends pas de fichier, uniquement des inputs "classiques" !
 app.use(bodyParser.none());
 
+const extendDefaultFields = async (defaults, session) => {
+	if (session.user) {
+		return {
+			data: defaults.data,
+			expires: defaults.expires,
+		};
+	}
+};
+
 const store = new SequelizeStore({
 	db: client,
 	tableName: "session",
+	extendDefaultFields: extendDefaultFields,
 });
 
-app.set("trust proxy", false);
 app.use(
 	session({
 		secret: process.env.SESSION_SECRET,
@@ -49,7 +58,6 @@ app.use(
 			secure: false,
 			httpOnly: false,
 			maxAge: 5000 * 60 * 60,
-			sameSite: "none",
 		},
 	})
 );
