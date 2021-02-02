@@ -112,8 +112,8 @@ app.use(morgan("dev"));
 // app.use(upload.single("file"));
 
 // brancher le router
-app.use(routerUpload);
 app.use(router);
+app.use(routerUpload);
 
 // lancer l'écoute
 const port = process.env.PORT || 5050;

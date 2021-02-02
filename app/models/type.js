@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
 const client = require("../db");
 
-class Variety extends Sequelize.Model {}
+class Type extends Sequelize.Model {}
 
-Variety.init(
+Type.init(
 	{
 		name: {
 			type: Sequelize.TEXT,
@@ -22,8 +22,8 @@ Variety.init(
 	},
 	{
 		sequelize: client,
-		tableName: "variety",
+		tableName: "type",
 	}
 );
 
-module.exports = Variety;
+module.exports = Type;

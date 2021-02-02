@@ -1,6 +1,7 @@
 // on require les models
-const { Basket } = require("../models");
+const { Basket, Product } = require("../models");
 const models = require("../models");
+// const { findAll } = require("../models/tea");
 const pictureController = require("./pictureController");
 
 // petite fonction bien pratique, pour passer la première lettre d'une string en majuscule
@@ -55,9 +56,11 @@ const genericController = {
 	// une méthode GET pour renvoyer une seul instance (ou 404 si non trouvée)
 	getOne: async (req, res, next) => {
 		try {
+			const { entity, type, name } = req.params;
 			// d'abord récupérer la classe ciblée
-			const trueModelName = uppercaseFirstLetter(req.params.entity);
+			const trueModelName = uppercaseFirstLetter(entity);
 			const targetClass = models[trueModelName];
+			console.log(req.params);
 
 			if (!targetClass) {
 				// si la classe ciblée n'exite pas => 404
@@ -67,10 +70,9 @@ const genericController = {
 			}
 
 			// on a la bonne classe => on va chercher l'instance
-			const targetId = req.params.id;
 			const result = await targetClass.findOne({
 				where: {
-					[req.params.type]: req.params.name, // userId or objectName
+					[type]: name, // userId or objectName
 				},
 				include: [{ all: true, nested: true }],
 			});
@@ -84,7 +86,7 @@ const genericController = {
 
 			// tout va bien => on renvoie l'instance
 			res.status(200).send({
-				result,
+				result: result,
 			});
 		} catch (error) {
 			console.trace(error);
@@ -94,7 +96,7 @@ const genericController = {
 
 	create: async (req, res, next) => {
 		try {
-			const { emailOrName } = req.body;
+			const { emailOrName, productId, quantity, userId } = req.body;
 			// d'abord récupérer la classe ciblée
 			const trueModelName = uppercaseFirstLetter(req.params.entity);
 			const targetClass = models[trueModelName];
@@ -122,19 +124,9 @@ const genericController = {
 			// ATTENTION : ceci n'est possible QUE parcequ'on a pris le temps de définir des modèles avec une validation !!
 			const newResult = await targetClass.create(req.body);
 
-			if (trueModelName === "Tea") {
+			if (trueModelName === "Product") {
 				// await pictureController.createPicture(req, res);
 				//! vérifier si on récupère l'objet à jour avec la photo
-			}
-
-			if (trueModelName === "User") {
-				const basket = await models["Basket"].create({
-					UserId: newResult.id,
-				});
-
-				await newResult.update({
-					BasketId: basket.id,
-				});
 			}
 
 			// on renvoie l'instance nouvellement créée
@@ -150,27 +142,32 @@ const genericController = {
 	// une méthode PATCH pour modifier une instance (ou 404 si non trouvée)
 	update: async (req, res, next) => {
 		try {
-			const { emailOrName } = req.body;
-			// d'abord récupérer la classe ciblée
-			const trueModelName = uppercaseFirstLetter(req.params.entity);
+			const { emailOrName, quantity } = req.body;
+			const { entity, id } = req.params;
+
+			// Upper case first letter of entity according to model name
+			const trueModelName = uppercaseFirstLetter(entity);
+
+			// Search model
+			// entity = foo and modelName = Foo
 			const targetClass = models[trueModelName];
 
 			if (!targetClass) {
-				// si la classe ciblée n'exite pas => 404
-				return next();
+				// if model doesnt exist => 404
+				return res.sendStatus(404);
 			}
 
+			// Do not update any sale
 			if (trueModelName === "Sale") {
 				return res.status(403).send({
 					message: "Vous ne pouvez pas modifier une facture",
 				});
 			}
 
-			// on a la bonne classe => on va chercher l'instance
-			const targetId = req.params.id;
-			const targetInstance = await targetClass.findByPk(targetId);
+			// Search the corresponding entity
+			const targetInstance = await targetClass.findByPk(id);
 
-			// si l'instance n'existe pas => 404
+			// If entity doesnt exist => 404
 			if (!targetInstance) {
 				return res.status(404).send({
 					message: "Aucun résultat",
@@ -184,31 +181,18 @@ const genericController = {
 				},
 			});
 
+			// If exist stop update
 			if (isExist) {
 				return res.status(403).send({
 					message: `${req.body[emailOrName]} est déjà utilisé`,
 				});
 			}
 
-			if (trueModelName === "Basket") {
-				const targetTea = await models["Tea"].findAll({
-					where: {
-						id: req.body.teas,
-					},
-				});
-
-				if (targetTea.length !== req.body.teas.length) {
-					return res.status(500).send({
-						message: "Une erreur est survenue, ce thé n'existe pas",
-					});
-				}
-			}
-
 			// sinon, on met tout à jour, et on renvoie le résultat
 			await targetInstance.update(req.body);
 
 			res.status(200).send({
-				[trueModelName]: targetInstance,
+				[entity]: targetInstance,
 			});
 		} catch (error) {
 			console.trace(error);

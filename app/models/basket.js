@@ -5,15 +5,19 @@ class Basket extends Sequelize.Model {}
 
 Basket.init(
 	{
-		UserId: {
+		app_user_id: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			validate: {
 				notEmpty: true,
 			},
 		},
-		teas: {
-			type: Sequelize.ARRAY(Sequelize.DataTypes.INTEGER),
+		product_id: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			validate: {
+				notEmpty: true,
+			},
 		},
 	},
 	{
