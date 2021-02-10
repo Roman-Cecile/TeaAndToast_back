@@ -15,7 +15,7 @@ router.delete("/delete/user/:id", loginController.delete);
 // basket
 router.get("/basket/:userId", basketController.allProductsInBasket);
 router.post("/basket/:userId/:productId/:productQuantity", basketController.create);
-router.delete("/basket/:userId/:productId/:productQuantity", basketController.delete);
+router.delete("/basket/:userId/:deleteType", basketController.delete);
 
 // router.get("/admin/:entity/number/:number", genericController.getAll);
 router.get("/:entity", genericController.getAll);

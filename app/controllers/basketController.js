@@ -101,8 +101,8 @@ const genericController = {
 	// une methode DELETE pour supprimer une instance (ou 404 si non trouvée)
 	delete: async (req, res, next) => {
 		try {
-			const { userId, productId, productQuantity } = req.params;
-			console.log("delete", productQuantity);
+			const { userId, deleteType } = req.params;
+			const { productId } = req.body;
 
 			// Check user in BDD
 			const user = await models.User.findByPk(userId);
@@ -112,25 +112,36 @@ const genericController = {
 				});
 			}
 
-			// Search all baskets with productId and userId
-			const baskets = await models.Basket.findAll({
-				where: {
-					app_user_id: user.id,
-					product_id: productId,
-				},
-			});
-
-			if (!baskets.length) {
-				return res.status(403).send({
-					message: "Une erreur est survenue, ce produit dans votre panier n'existe pas",
-				});
-			}
-
 			// Delete one or more basket according to user demand
-			if (parseInt(productQuantity, 10) === 1) {
-				await baskets[0].destroy();
-			} else {
+			if (deleteType === "product") {
+				// Search all baskets with productId and userId
+				const baskets = await models.Basket.findAll({
+					where: {
+						app_user_id: user.id,
+						product_id: productId,
+					},
+				});
+
+				if (!baskets.length) {
+					return res.status(403).send({
+						message: "Une erreur est survenue, ce produit dans votre panier n'existe pas",
+					});
+				}
 				await baskets.forEach((basket) => basket.destroy());
+			} else {
+				// reduce quantity
+				const basket = await models.Basket.findOne({
+					where: {
+						app_user_id: user.id,
+						product_id: productId,
+					},
+				});
+				if (!basket) {
+					return res.status(403).send({
+						message: "Une erreur est survenue, ce produit dans votre panier n'existe pas",
+					});
+				}
+				await basket.destroy();
 			}
 
 			res.sendStatus(200);
