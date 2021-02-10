@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
 const client = require("../db");
 
-class Tea extends Sequelize.Model {}
+class Product extends Sequelize.Model {}
 
-Tea.init(
+Product.init(
 	{
 		name: {
 			type: Sequelize.TEXT,
@@ -19,6 +19,11 @@ Tea.init(
 				notEmpty: true,
 			},
 		},
+
+		picture: {
+			type: Sequelize.TEXT,
+		},
+
 		price: {
 			type: Sequelize.FLOAT,
 			allowNull: false,
@@ -33,14 +38,17 @@ Tea.init(
 				notEmpty: true,
 			},
 		},
-		variety_id: {
+		tea_variety_id: {
+			type: Sequelize.INTEGER,
+		},
+		category_id: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			validate: {
 				notEmpty: true,
 			},
 		},
-		category_id: {
+		type_id: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			validate: {
@@ -50,8 +58,8 @@ Tea.init(
 	},
 	{
 		sequelize: client,
-		tableName: "tea",
+		tableName: "product",
 	}
 );
 
-module.exports = Tea;
+module.exports = Product;

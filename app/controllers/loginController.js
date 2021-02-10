@@ -47,6 +47,7 @@ const loginController = {
 					});
 				}
 
+				console.log(password, confirmPassword);
 				if (password !== confirmPassword) {
 					return res.status(403).send({
 						message: "La confirmation a échoué",
@@ -59,16 +60,10 @@ const loginController = {
 				const newUser = await User.create({
 					email: email,
 					password: hashMdp,
+					logged: false,
 					// role: data.email === process.env.ADMIN ? "admin" : "user",
 				});
 
-				const basket = await Basket.create({
-					UserId: newUser.id,
-				});
-
-				await newUser.update({
-					BasketId: basket.id,
-				});
 				// on renvoie l'instance nouvellement créée
 				res.status(200).send({
 					message: "Inscription réussie ! Vous pouvez vous connecter",
@@ -105,6 +100,32 @@ const loginController = {
 			}
 
 			res.sendStatus(404);
+		} catch (error) {
+			console.trace(error);
+			res.status(500).send(error);
+		}
+	},
+
+	delete: async (req, res, next) => {
+		try {
+			// delete session
+			delete req.session.user;
+
+			// ensuite, on va chercher l'instance ciblée
+			const { id } = req.params;
+			const user = await User.findByPk(id);
+
+			// si elle existe pas => 404
+			if (!user) {
+				return res.status(404).send({
+					message: "Aucun utilisateur à supprimer",
+				});
+			}
+
+			// si tout est ok, on supprime et on renvoie "ok"
+			await user.destroy();
+
+			res.sendStatus(200);
 		} catch (error) {
 			console.trace(error);
 			res.status(500).send(error);

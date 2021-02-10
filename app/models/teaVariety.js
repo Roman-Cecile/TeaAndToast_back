@@ -1,26 +1,19 @@
 const Sequelize = require("sequelize");
 const client = require("../db");
 
-class User extends Sequelize.Model {}
+class Tea_variety extends Sequelize.Model {}
 
-User.init(
+Tea_variety.init(
 	{
-		email: {
+		name: {
 			type: Sequelize.TEXT,
 			allowNull: false,
 			validate: {
 				notEmpty: true,
 			},
 		},
-		password: {
+		color: {
 			type: Sequelize.TEXT,
-			allowNull: false,
-			validate: {
-				notEmpty: true,
-			},
-		},
-		logged: {
-			type: Sequelize.BOOLEAN,
 			allowNull: false,
 			validate: {
 				notEmpty: true,
@@ -29,8 +22,8 @@ User.init(
 	},
 	{
 		sequelize: client,
-		tableName: "app_user",
+		tableName: "tea_variety",
 	}
 );
 
-module.exports = User;
+module.exports = Tea_variety;

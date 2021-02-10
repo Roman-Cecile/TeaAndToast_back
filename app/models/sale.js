@@ -40,8 +40,8 @@ Sale.init(
 				notEmpty: true,
 			},
 		},
-		teas: {
-			type: Sequelize.ARRAY(Sequelize.DataTypes.INTEGER),
+		basket_id: {
+			type: Sequelize.INTEGER,
 			allowNull: false,
 			validate: {
 				notEmpty: true,

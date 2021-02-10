@@ -7,25 +7,38 @@
 const Basket = require("./basket");
 const Category = require("./category");
 const Sale = require("./sale");
-const Tea = require("./tea");
+const Product = require("./product");
 const User = require("./user");
-const Variety = require("./variety");
+const Tea_variety = require("./teaVariety");
 const Session = require("./session");
+const Type = require("./type");
 
-// Category <-> Tea
-Category.hasMany(Tea, {
+// Category <-> Product
+Category.hasMany(Product, {
 	foreignKey: "category_id",
-	as: "teas_category",
+	as: "produts",
 });
 
-Tea.belongsTo(Category, {
+Product.belongsTo(Category, {
 	foreignKey: "category_id",
 	as: "category",
 });
+
+// Type <-> Product
+Type.hasMany(Product, {
+	foreignKey: "type_id",
+	as: "produts",
+});
+
+Product.belongsTo(Type, {
+	foreignKey: "type_id",
+	as: "type",
+});
+
 // User <-> Sale
-User.hasOne(Sale, {
+User.hasMany(Sale, {
 	foreignKey: "app_user_id",
-	as: "sale",
+	as: "sales",
 });
 
 Sale.belongsTo(User, {
@@ -33,28 +46,35 @@ Sale.belongsTo(User, {
 	as: "buyer",
 });
 
-// Variety <-> Tea
-Variety.hasMany(Tea, {
-	foreignKey: "variety_id", // indique que Tea possède une colonne variety_id
-	as: "teas_variety", // permet d'appeler les teas d'une Variété
+// Variety <-> Product
+Tea_variety.hasMany(Product, {
+	foreignKey: "tea_variety_id", // indique que Product possède une colonne tea_variety_id
+	as: "products", // permet d'appeler les teas d'une Variété
 });
 
-Tea.belongsTo(Variety, {
-	foreignKey: "variety_id",
+Product.belongsTo(Tea_variety, {
+	foreignKey: "tea_variety_id",
 	as: "variety",
 });
 
 // User <-> Basket
-// User.hasOne(Basket);
+User.hasMany(Basket, {
+	foreignKey: "app_user_id",
+	as: "baskets",
+});
 
-// Basket.hasOne(User);
+Basket.belongsTo(User, {
+	foreignKey: "app_user_id",
+	as: "user",
+});
 
 module.exports = {
 	Category,
 	Sale,
 	Basket,
 	User,
-	Variety,
-	Tea,
+	Tea_variety,
+	Product,
 	Session,
+	Type,
 };
