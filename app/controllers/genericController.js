@@ -60,7 +60,6 @@ const genericController = {
 			// d'abord récupérer la classe ciblée
 			const trueModelName = uppercaseFirstLetter(entity);
 			const targetClass = models[trueModelName];
-			console.log(req.params);
 
 			if (!targetClass) {
 				// si la classe ciblée n'exite pas => 404
@@ -142,14 +141,14 @@ const genericController = {
 	// une méthode PATCH pour modifier une instance (ou 404 si non trouvée)
 	update: async (req, res, next) => {
 		try {
-			const { emailOrName, quantity } = req.body;
+			const { emailOrName } = req.body;
 			const { entity, id } = req.params;
 
 			// Upper case first letter of entity according to model name
 			const trueModelName = uppercaseFirstLetter(entity);
 
 			// Search model
-			// entity = foo and modelName = Foo
+			// entity = foo and trueModelName = Foo
 			const targetClass = models[trueModelName];
 
 			if (!targetClass) {
