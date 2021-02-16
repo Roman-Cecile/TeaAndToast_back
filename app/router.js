@@ -10,6 +10,7 @@ const loginController = require("./controllers/loginController");
 router.post("/login/:loginType", loginController.login);
 router.get("/check-login", loginController.checkLogin);
 router.get("/logout", loginController.logOut);
+router.patch("/user/:id", loginController.update);
 router.delete("/delete/user/:id", loginController.delete);
 
 // basket

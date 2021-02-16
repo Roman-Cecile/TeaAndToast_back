@@ -26,6 +26,7 @@ const loginController = {
 				});
 			}
 
+			//....................SIGNIN....................
 			if (loginType === "signin") {
 				const validPwd = await bcrypt.compareSync(password, userIsExist.password);
 
@@ -35,19 +36,23 @@ const loginController = {
 					});
 				}
 
+				await userIsExist.update({
+					logged: true,
+				});
+
 				req.session.user = userIsExist;
 				req.session.user.save();
 				res.status(200).send({
 					user: req.session.user,
 				});
 			} else {
+				//....................SIGNUP....................
 				if (userIsExist) {
 					return res.status(403).send({
 						message: `${email} est déjà utilisé`,
 					});
 				}
 
-				console.log(password, confirmPassword);
 				if (password !== confirmPassword) {
 					return res.status(403).send({
 						message: "La confirmation a échoué",
@@ -100,6 +105,74 @@ const loginController = {
 			}
 
 			res.sendStatus(404);
+		} catch (error) {
+			console.trace(error);
+			res.status(500).send(error);
+		}
+	},
+
+	update: async (req, res, next) => {
+		try {
+			const { email, password, newPassword, confirmPassword } = req.body;
+
+			const user = await User.findByPk(req.params.id);
+
+			if (!user) {
+				return res.status(404).send({
+					message: "Aucun utilisateur ne correspond",
+				});
+			}
+
+			const validPwd = await bcrypt.compareSync(password, user.password);
+
+			if (!validPwd) {
+				return res.status(403).send({
+					message: "Mot de passe incorrect",
+				});
+			}
+
+			// If user wants to update email
+			if (email) {
+				// Check if email is already exist in DB
+				const isExist = await User.findOne({
+					where: {
+						email,
+					},
+				});
+
+				if (isExist) {
+					return res.status(403).send({
+						message: `${email} est déjà utilisé`,
+					});
+				}
+
+				await user.update({
+					email,
+				});
+			}
+
+			// If user wants to update his password check if newPw is equal to confirmation
+			if (newPassword && newPassword !== confirmPassword) {
+				return res.status(403).send({
+					message: "Les mots de passe ne correspondent pas",
+				});
+			}
+
+			// If newPassword === confirmPassword, encrypt it
+			if (newPassword) {
+				const hashMdp = await bcrypt.hashSync(newPassword, 10);
+				req.body.password = hashMdp;
+				await user.update({
+					password: hashMdp,
+				});
+			}
+
+			req.session.user = user;
+
+			res.status(200).send({
+				message: "Informations mises à jour",
+				user,
+			});
 		} catch (error) {
 			console.trace(error);
 			res.status(500).send(error);
