@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
 const client = require("../db");
 
-class Type extends Sequelize.Model {}
+class SubCategory extends Sequelize.Model {}
 
-Type.init(
+SubCategory.init(
 	{
 		name: {
 			type: Sequelize.TEXT,
@@ -19,11 +19,18 @@ Type.init(
 				notEmpty: true,
 			},
 		},
+		type: {
+			type: Sequelize.TEXT,
+			allowNull: false,
+			validate: {
+				notEmpty: true,
+			},
+		},
 	},
 	{
 		sequelize: client,
-		tableName: "type",
+		tableName: "sub_category",
 	}
 );
 
-module.exports = Type;
+module.exports = SubCategory;

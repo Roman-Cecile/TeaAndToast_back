@@ -10,38 +10,35 @@ function uppercaseFirstLetter(str) {
 }
 
 const genericController = {
-	// une méthode GET pour renvoyer toutes les instances
 	getAll: async (req, res, next) => {
 		try {
-			// on récupère  le modèle ciblée (="l'entité") dans les paramètres d'url
-			const targetModel = req.params.entity;
+			const { entity, offset, productType } = req.params;
 
-			// il faut récupérer la vrai class Model à partir du nom de l'entité ciblée
-			// exemple : la route "/list" nous donne le paramètre "list" alors que le model s'appelle List  => il faut passer la première en majuscule !
-			const trueModelName = uppercaseFirstLetter(targetModel);
+			let trueModelName;
 
-			// maintenant qu'on a le nom du modèle, on veut LE modele, le vrai !
-			// on utilise la bracket-notation :
-			//  si trueModelName vaut "List",
-			//  alors models[trueModelName] revient à écrire models["List"]
-			//  ce qui équivaut à écrire models.List, et bingo (twingo?), ça c'est notre classe
+			if (entity === "sub_category") {
+				trueModelName = "SubCategory";
+			} else {
+				trueModelName = uppercaseFirstLetter(entity);
+			}
+
 			const targetClass = models[trueModelName];
 
-			// petit test : on vérifie que la classe visée existe bien, sinon 404
 			if (!targetClass) {
 				return res.status(404).send({
 					message: "Aucun résultat",
 				});
 			}
 
-			// maintenant qu'on a la bonne classe, on va chercher toutes les instances !
-
-			// UPDATE pour les positions :
-			// on met les options de requetes dans un objet
-			const options = {
+			let options = {
 				include: [{ all: true, nested: true }],
 			};
 
+			if (entity === "product") {
+				options = { ...options, limit: 5, offset };
+			} else if (entity === "sub_category") {
+				options = { ...options, where: { type: productType } };
+			}
 			const allResults = await targetClass.findAll(options);
 
 			res.status(200).send({
@@ -95,9 +92,17 @@ const genericController = {
 
 	create: async (req, res, next) => {
 		try {
-			const { emailOrName, productId, quantity, userId } = req.body;
-			// d'abord récupérer la classe ciblée
-			const trueModelName = uppercaseFirstLetter(req.params.entity);
+			const { name } = req.body;
+			const { entity } = req.params;
+
+			let trueModelName;
+
+			if (entity === "sub_category") {
+				trueModelName = "SubCategory";
+			} else {
+				trueModelName = uppercaseFirstLetter(entity);
+			}
+
 			const targetClass = models[trueModelName];
 
 			if (!targetClass) {
@@ -110,13 +115,13 @@ const genericController = {
 			// Check if name or email is already exist
 			const isExist = await targetClass.findOne({
 				where: {
-					[emailOrName]: req.body[emailOrName],
+					name,
 				},
 			});
 
 			if (isExist) {
 				return res.status(403).send({
-					message: `${req.body[emailOrName]} est déjà utilisé`,
+					message: `${name} est déjà utilisé`,
 				});
 			}
 

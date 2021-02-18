@@ -38,9 +38,15 @@ Product.init(
 				notEmpty: true,
 			},
 		},
-		tea_variety_id: {
-			type: Sequelize.INTEGER,
+		quantity: {
+			type: Sequelize.NUMBER,
+			allowNull: false,
+			defaultValue: 1,
+			validate: {
+				notEmpty: true,
+			},
 		},
+
 		category_id: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
@@ -48,7 +54,15 @@ Product.init(
 				notEmpty: true,
 			},
 		},
-		type_id: {
+		type: {
+			type: Sequelize.TEXT,
+			allowNull: false,
+			defaultValue: "tea",
+			validate: {
+				notEmpty: true,
+			},
+		},
+		sub_category_id: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
 			validate: {

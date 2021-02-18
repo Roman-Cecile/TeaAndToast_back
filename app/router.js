@@ -4,6 +4,7 @@ const router = express.Router();
 const genericController = require("./controllers/genericController");
 const basketController = require("./controllers/basketController");
 const loginController = require("./controllers/loginController");
+const productController = require("./controllers/productController");
 
 // Login
 // loginType = "signin" || "signup"
@@ -19,7 +20,7 @@ router.post("/basket/:userId/:productId/:productQuantity", basketController.crea
 router.delete("/basket/:userId/:deleteType", basketController.delete);
 
 // router.get("/admin/:entity/number/:number", genericController.getAll);
-router.get("/:entity", genericController.getAll);
+router.get("/:entity/:offset/:productType", genericController.getAll);
 // entity = talbe name
 // name = value of object
 // type = name, email or id
